@@ -1,0 +1,9 @@
+SELECT 
+EXTRACT(month FROM r.rental_date) as Rental_Month, 
+EXTRACT(year FROM r.rental_date) as Rental_Year,
+i.store_id,
+count(r.rental_id) as count_rentals 
+FROM rental r
+JOIN inventory i ON i.inventory_id = r.inventory_id
+GROUP BY Rental_Year, Rental_Month, i.store_id
+ORDER BY Rental_Year, Rental_Month

@@ -1,0 +1,11 @@
+SELECT sum(total_paid_amount),payment_month, customer_name
+FROM (SELECT 
+      DISTINCT(c.first_name || ' ' || c.last_name) AS customer_name,
+      to_char(p.payment_date, 'YYYY-MM') as payment_month,
+      SUM(p.amount) as total_paid_amount
+      FROM payment p
+      JOIN customer c ON p.customer_id = c.customer_id
+      WHERE EXTRACT(year FROM payment_date) = 2007
+      GROUP BY payment_month, customer_name
+      ORDER by payment_month) as sub_q
+GROUP BY payment_month, customer_name

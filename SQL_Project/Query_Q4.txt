@@ -1,0 +1,20 @@
+WITH family_movies AS (
+  SELECT 
+    f.title AS film_title,
+    c.name AS category_name,
+    AVG(EXTRACT(DAY FROM (r.return_date - r.rental_date))) AS avg_rental_duration
+  FROM film f
+  JOIN film_category fc ON fc.film_id = f.film_id
+  JOIN category c ON c.category_id = fc.category_id
+  JOIN inventory i ON i.film_id = f.film_id
+  JOIN rental r ON r.inventory_id = i.inventory_id
+  WHERE c.name IN ('Animation', 'Children', 'Classics', 'Comedy', 'Family', 'Music')
+  GROUP BY f.title, c.name
+)
+SELECT 
+  family_movies.film_title as title,
+  family_movies.category_name,
+  ROUND(CAST(family_movies.avg_rental_duration as numeric),2) as rental_duration,
+  NTILE(4) OVER (ORDER BY family_movies.avg_rental_duration) AS standard_quartile
+FROM family_movies
+ORDER BY family_movies.category_name ASC, family_movies.film_title ASC;
